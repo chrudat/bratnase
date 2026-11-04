@@ -1,22 +1,19 @@
 import os
 from datetime import datetime
 
-# Absoluten Pfad des Skript-Verzeichnisses ermitteln
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MENU_DIR = os.path.join(BASE_DIR, "menus")
 OUTPUT_FILE = os.path.join(BASE_DIR, "index.html")
 
-# Ordner 'menus' anlegen, falls er lokal nicht existiert
 if not os.path.exists(MENU_DIR):
     os.makedirs(MENU_DIR)
 
-# Alle PDFs auslesen
 files = [f for f in os.listdir(MENU_DIR) if f.lower().endswith(".pdf")]
 files.sort()
 
 cards_html = ""
 if not files:
-    cards_html = "<p class='no-cards'>Aktuell sind keine Speisekarten hinterlegt.</p>"
+    cards_html = "<div class='no-cards'>Aktuell sind keine Speisekarten hinterlegt.</div>"
 else:
     for f in files:
         name = f.rsplit(".", 1)[0].replace("_", " ")
@@ -25,13 +22,20 @@ else:
         mod_time = datetime.fromtimestamp(os.path.getmtime(full_filepath)).strftime("%d.%m.%Y")
         
         cards_html += f"""
-        <div class="card">
-            <h2>{name}</h2>
-            <p class="updated">Stand: {mod_time}</p>
-            <div class="actions">
-                <a href="{filepath}" target="_blank" class="btn">Speisekarte (PDF) öffnen</a>
+        <article class="card">
+            <div class="card-body">
+                <span class="badge">PDF</span>
+                <h2 class="card-title">{name}</h2>
+                <p class="card-meta">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Stand: {mod_time}
+                </p>
             </div>
-        </div>
+            <a href="{filepath}" target="_blank" rel="noopener" class="btn">
+                <span>Speisekarte öffnen</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+        </article>
         """
 
 html_content = f"""<!DOCTYPE html>
@@ -41,22 +45,161 @@ html_content = f"""<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mittagspause – Speisekarten</title>
     <style>
-        body {{ font-family: system-ui, -apple-system, sans-serif; background: #f4f5f7; margin: 0; padding: 20px; color: #333; }}
-        h1 {{ text-align: center; margin-bottom: 30px; }}
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }}
-        .card {{ background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }}
-        .card h2 {{ margin-top: 0; font-size: 1.25rem; }}
-        .updated {{ font-size: 0.85rem; color: #666; }}
-        .btn {{ display: inline-block; background: #0066cc; color: white; text-decoration: none; padding: 10px 15px; border-radius: 6px; text-align: center; font-weight: bold; margin-top: 15px; }}
-        .btn:hover {{ background: #0052a3; }}
-        .no-cards {{ grid-column: 1 / -1; text-align: center; color: #777; font-style: italic; }}
+        :root {{
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent-bg: #eff6ff;
+            --border-color: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+        }}
+
+        * {{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }}
+
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 24px 16px 40px;
+            -webkit-font-smoothing: antialiased;
+        }}
+
+        header {{
+            max-width: 600px;
+            margin: 0 auto 28px;
+            text-align: center;
+        }}
+
+        header h1 {{
+            font-size: 1.65rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }}
+
+        header p {{
+            margin-top: 6px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }}
+
+        .grid {{
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }}
+
+        /* Tablet & Desktop Layout */
+        @media (min-width: 640px) {{
+            .grid {{
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                max-width: 900px;
+            }}
+            header h1 {{
+                font-size: 2rem;
+            }}
+        }}
+
+        .card {{
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }}
+
+        .card:active {{
+            transform: scale(0.99);
+        }}
+
+        .card-body {{
+            margin-bottom: 16px;
+        }}
+
+        .badge {{
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--accent-bg);
+            color: var(--primary);
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }}
+
+        .card-title {{
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }}
+
+        .card-meta {{
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }}
+
+        .btn {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: var(--primary);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 12px 16px;
+            border-radius: 10px;
+            transition: background-color 0.15s ease;
+            /* Verhindert unbeabsichtigtes Markieren beim Antworten/Tippen */
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }}
+
+        .btn:hover {{
+            background-color: var(--primary-hover);
+        }}
+
+        .no-cards {{
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px dashed var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }}
     </style>
 </head>
 <body>
-    <h1>🍕 Mittagspause Speisekarten</h1>
-    <div class="grid">
+    <header>
+        <h1>🍕 Mittagspause</h1>
+        <p>Aktuelle Speisekarten im Überblick</p>
+    </header>
+    <main class="grid">
         {cards_html}
-    </div>
+    </main>
 </body>
 </html>
 """
