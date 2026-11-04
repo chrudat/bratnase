@@ -12,7 +12,8 @@ OUTPUT_FILE = os.path.join(BASE_DIR, "index.html")
 if not os.path.exists(MENU_DIR):
     os.makedirs(MENU_DIR)
 
-files = [f for f in os.listdir(MENU_DIR) if f.lower().endswith(".pdf")]
+# Liest sowohl .pdf als auch .url Dateien
+files = [f for f in os.listdir(MENU_DIR) if f.lower().endswith((".pdf", ".url"))]
 files.sort()
 
 cards_html = ""
@@ -27,6 +28,7 @@ if not files:
     cards_html = "<div class='no-cards'>Aktuell sind keine Speisekarten hinterlegt.</div>"
 else:
     for f in files:
+        ext = os.path.splitext(f)[1].lower()
         filename_raw = unicodedata.normalize("NFC", f.rsplit(".", 1)[0])
         parts = filename_raw.split("_")
         
@@ -51,10 +53,18 @@ else:
             category = "Sonstiges"
         categories.add(category)
         
-        filepath_encoded = f"menus/{quote(f)}"
         full_filepath = os.path.join(MENU_DIR, f)
         mod_time = datetime.fromtimestamp(os.path.getmtime(full_filepath)).strftime("%d.%m.%Y")
         
+        # Link-Ziel und Button-Bezeichnung bestimmen (.pdf oder .url)
+        if ext == ".url":
+            with open(full_filepath, "r", encoding="utf-8") as url_file:
+                target_url = url_file.read().strip()
+            button_label = "Webseite"
+        else:
+            target_url = f"menus/{quote(f)}"
+            button_label = "Speisekarte"
+
         phone_button_html = ""
         if phone:
             clean_phone = re.sub(r"[^\d+]", "", phone)
@@ -62,7 +72,7 @@ else:
             if clean_phone:
                 phone_button_html = (
                     f'<a href="tel:{clean_phone}" class="btn btn-phone" title="Anrufen: {display_phone}">'
-                    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>'
+                    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3-3 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>'
                     f'<span>{display_phone}</span></a>'
                 )
         
@@ -76,9 +86,9 @@ else:
             f' Stand: {mod_time}'
             f'</p></div>'
             f'<div class="actions">'
-            f'<a href="{filepath_encoded}" target="_blank" rel="noopener" class="btn btn-pdf">'
+            f'<a href="{target_url}" target="_blank" rel="noopener" class="btn btn-pdf">'
             f'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>'
-            f'<span>Karte</span></a>'
+            f'<span>{button_label}</span></a>'
             f'{phone_button_html}'
             f'</div></article>'
         )
@@ -98,4 +108,4 @@ final_html = final_html.replace("<!--CARDS_HTML-->", cards_html)
 with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
     out.write(final_html)
 
-print("index.html erfolgreich mit sichtbaren Telefonnummern generiert.")
+print("index.html erfolgreich mit der Bezeichnung 'Speisekarte' generiert.")
