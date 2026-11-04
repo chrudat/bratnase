@@ -30,12 +30,13 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           port: 21
-          # Zielpfad auf dem Netcup-Server (an deinen Ordner im Webspace anpassen):
+          # Netcup-spezifische Stabilitätseinstellungen:
+          security-option: explicit
           server-dir: /httpdocs/
-          # Dateien ignorieren, die nicht auf den Server gehören:
           exclude: |
             **/.git*
             **/.git*/**
             .github/**
             README.md
             .gitkeep
+            build.py
