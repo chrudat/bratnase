@@ -30,6 +30,7 @@ else:
         filename_raw = unicodedata.normalize("NFC", f.rsplit(".", 1)[0])
         parts = filename_raw.split("_")
         
+        # Segmente auswerten: [Kategorie]_[Name]_[Telefonnummer]
         if len(parts) >= 3:
             raw_cat = parts[0]
             phone = parts[-1]
@@ -57,11 +58,12 @@ else:
         phone_button_html = ""
         if phone:
             clean_phone = re.sub(r"[^\d+]", "", phone)
+            display_phone = clean_text(phone)
             if clean_phone:
                 phone_button_html = (
-                    f'<a href="tel:{clean_phone}" class="btn btn-phone">'
+                    f'<a href="tel:{clean_phone}" class="btn btn-phone" title="Anrufen: {display_phone}">'
                     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>'
-                    '<span>Anrufen</span></a>'
+                    f'<span>{display_phone}</span></a>'
                 )
         
         cards_html += (
@@ -96,4 +98,4 @@ final_html = final_html.replace("<!--CARDS_HTML-->", cards_html)
 with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
     out.write(final_html)
 
-print("index.html erfolgreich aus template.html generiert.")
+print("index.html erfolgreich mit sichtbaren Telefonnummern generiert.")
