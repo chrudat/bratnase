@@ -51,9 +51,7 @@ else:
             category = "Sonstiges"
         categories.add(category)
         
-        # RFC-konformer URL-Pfad für relative Einbindung auf GitHub Pages
         filepath_encoded = f"menus/{quote(f)}"
-        
         full_filepath = os.path.join(MENU_DIR, f)
         mod_time = datetime.fromtimestamp(os.path.getmtime(full_filepath)).strftime("%d.%m.%Y")
         
@@ -125,7 +123,7 @@ html_content = f"""<!DOCTYPE html>
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding: 24px 16px 40px;
+            padding: 20px 16px 40px;
             -webkit-font-smoothing: antialiased;
         }}
 
@@ -133,6 +131,29 @@ html_content = f"""<!DOCTYPE html>
             max-width: 600px;
             margin: 0 auto 20px;
             text-align: center;
+        }}
+
+        /* Banner Styling */
+        .banner-container {{
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 16px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid var(--border-color);
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }}
+
+        .banner-svg {{
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            display: block;
         }}
 
         header h1 {{
@@ -185,7 +206,7 @@ html_content = f"""<!DOCTYPE html>
         }}
 
         @media (min-width: 640px) {{
-            .grid, .filter-container {{
+            .grid, .filter-container, header, .banner-container {{
                 max-width: 900px;
             }}
             .grid {{
@@ -293,6 +314,34 @@ html_content = f"""<!DOCTYPE html>
 </head>
 <body>
     <header>
+        <div class="banner-container">
+            <svg class="banner-svg" viewBox="0 0 400 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Hintergrund Akzent-Kreise -->
+                <circle cx="50" cy="45" r="35" fill="#2563eb" fill-opacity="0.08" />
+                <circle cx="350" cy="45" r="30" fill="#2563eb" fill-opacity="0.06" />
+                
+                <!-- Speisekarte / Menu Card Icon -->
+                <rect x="145" y="15" width="45" height="60" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="2.5"/>
+                <line x1="155" y1="28" x2="175" y2="28" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="155" y1="38" x2="170" y2="38" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+                <line x1="155" y1="46" x2="175" y2="46" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+                <line x1="155" y1="54" x2="165" y2="54" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+                
+                <!-- Teller & Bestecke Icons -->
+                <circle cx="225" cy="45" r="22" fill="#ffffff" stroke="#2563eb" stroke-width="2.5"/>
+                <circle cx="225" cy="45" r="16" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="3 3"/>
+                
+                <!-- Gabel (Links) -->
+                <path d="M195 32V44M192 32V38C192 39.6569 193.343 41 195 41C196.657 41 198 39.6569 198 38V32M195 41V58" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+                
+                <!-- Messer (Rechts) -->
+                <path d="M255 32V58M255 32C258.5 32 260 35 260 41V44H255" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                
+                <!-- Dekorative Sterne / Sparkles -->
+                <path d="M125 25L127 30L132 32L127 34L125 39L123 34L118 32L123 30L125 25Z" fill="#2563eb" fill-opacity="0.3"/>
+                <path d="M275 55L276.5 58.5L280 60L276.5 61.5L275 65L273.5 61.5L270 60L273.5 58.5L275 55Z" fill="#2563eb" fill-opacity="0.4"/>
+            </svg>
+        </div>
         <h1>🍕 Mittagspause</h1>
         <p>Aktuelle Speisekarten im Überblick</p>
     </header>
@@ -329,4 +378,4 @@ html_content = f"""<!DOCTYPE html>
 with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
     out.write(html_content)
 
-print(f"index.html erfolgreich mit {len(files)} Speisekarte(n) für GitHub Pages erstellt.")
+print(f"index.html erfolgreich mit {len(files)} Speisekarte(n) und SVG-Banner erstellt.")
