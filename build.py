@@ -20,7 +20,6 @@ categories = set()
 def clean_text(text: str) -> str:
     """Normalisiert Unicode (NFC), entfernt überflüssige Leerzeichen und formatiert Umlaute sauber."""
     text = unicodedata.normalize("NFC", text)
-    # Mehrfache Leerzeichen oder Unterstriche bereinigen
     text = re.sub(r"[\s_]+", " ", text).strip()
     return text
 
@@ -28,7 +27,6 @@ if not files:
     cards_html = "<div class='no-cards'>Aktuell sind keine Speisekarten hinterlegt.</div>"
 else:
     for f in files:
-        # Dateiname ohne Endung & Unicode normalisieren
         filename_raw = unicodedata.normalize("NFC", f.rsplit(".", 1)[0])
         parts = filename_raw.split("_")
         
@@ -46,7 +44,6 @@ else:
             raw_name = filename_raw
             phone = None
 
-        # Formatierung von Kategorie & Name
         category = clean_text(raw_cat).capitalize()
         name = clean_text(raw_name)
         
@@ -54,20 +51,19 @@ else:
             category = "Sonstiges"
         categories.add(category)
         
-        # URL-safe Pfad für HTML-Verlinkung
+        # RFC-konformer URL-Pfad für relative Einbindung auf GitHub Pages
         filepath_encoded = f"menus/{quote(f)}"
         
         full_filepath = os.path.join(MENU_DIR, f)
         mod_time = datetime.fromtimestamp(os.path.getmtime(full_filepath)).strftime("%d.%m.%Y")
         
-        # Anrufen-Button erzeugen, falls eine Nummer vorhanden ist
         phone_button_html = ""
         if phone:
             clean_phone = re.sub(r"[^\d+]", "", phone)
             if clean_phone:
                 phone_button_html = f"""
                 <a href="tel:{clean_phone}" class="btn btn-phone">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.5 19.5 0 0 1-3-3 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                     <span>Anrufen</span>
                 </a>
                 """
@@ -92,7 +88,6 @@ else:
         </article>
         """
 
-# Filter-Buttons HTML dynamisch erzeugen
 sorted_categories = sorted(list(categories))
 filter_buttons_html = '<button class="filter-btn active" onclick="filterCategory(\'all\', event)">Alle</button>'
 for cat in sorted_categories:
@@ -105,177 +100,4 @@ html_content = f"""<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mittagspause – Speisekarten</title>
     <style>
-        :root {{
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success: #16a34a;
-            --success-hover: #15803d;
-            --accent-bg: #eff6ff;
-            --border-color: #e2e8f0;
-            --radius: 16px;
-            --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
-        }}
-
-        * {{
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }}
-
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 24px 16px 40px;
-            -webkit-font-smoothing: antialiased;
-        }}
-
-        header {{
-            max-width: 600px;
-            margin: 0 auto 20px;
-            text-align: center;
-        }}
-
-        header h1 {{
-            font-size: 1.65rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-        }}
-
-        header p {{
-            margin-top: 4px;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-        }}
-
-        .filter-container {{
-            display: flex;
-            gap: 8px;
-            max-width: 600px;
-            margin: 0 auto 24px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            -webkit-overflow-scrolling: touch;
-        }}
-
-        .filter-btn {{
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.15s ease;
-        }}
-
-        .filter-btn.active {{
-            background: var(--primary);
-            color: #ffffff;
-            border-color: var(--primary);
-        }}
-
-        .grid {{
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-            max-width: 600px;
-            margin: 0 auto;
-        }}
-
-        @media (min-width: 640px) {{
-            .grid, .filter-container {{
-                max-width: 900px;
-            }}
-            .grid {{
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }}
-            header h1 {{
-                font-size: 2rem;
-            }}
-        }}
-
-        .card {{
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }}
-
-        .card.hidden {{
-            display: none;
-        }}
-
-        .card-body {{
-            margin-bottom: 16px;
-        }}
-
-        .badge {{
-            display: inline-block;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            background: var(--accent-bg);
-            color: var(--primary);
-            padding: 3px 8px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-        }}
-
-        .card-title {{
-            font-size: 1.2rem;
-            font-weight: 700;
-            line-height: 1.3;
-            margin-bottom: 8px;
-        }}
-
-        .card-meta {{
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }}
-
-        .actions {{
-            display: flex;
-            gap: 10px;
-        }}
-
-        .btn {{
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 10px 12px;
-            border-radius: 10px;
-            transition: background-color 0.15s ease;
-            -webkit-tap-highlight-color: transparent;
-        }}
-
-        .btn-pdf {{
-            background-color: var(--primary);
-        }}
-
-        .btn-pdf:hover {{
-            background-color: var(--primary-hover);
-        }}
-
-        .btn-phone {{
-            background-color:
+        :root
