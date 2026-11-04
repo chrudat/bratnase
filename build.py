@@ -1,5 +1,8 @@
 import os
+import re
+import unicodedata
 from datetime import datetime
+from urllib.parse import quote
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MENU_DIR = os.path.join(BASE_DIR, "menus")
@@ -14,25 +17,60 @@ files.sort()
 cards_html = ""
 categories = set()
 
+def clean_text(text: str) -> str:
+    """Normalisiert Unicode (NFC), entfernt überflüssige Leerzeichen und formatiert Umlaute sauber."""
+    text = unicodedata.normalize("NFC", text)
+    # Mehrfache Leerzeichen oder Unterstriche bereinigen
+    text = re.sub(r"[\s_]+", " ", text).strip()
+    return text
+
 if not files:
     cards_html = "<div class='no-cards'>Aktuell sind keine Speisekarten hinterlegt.</div>"
 else:
     for f in files:
-        filename_without_ext = f.rsplit(".", 1)[0]
+        # Dateiname ohne Endung & Unicode normalisieren
+        filename_raw = unicodedata.normalize("NFC", f.rsplit(".", 1)[0])
+        parts = filename_raw.split("_")
         
-        # Kategorie und Name anhand des ersten Unterstrichs trennen
-        if "_" in filename_without_ext:
-            category, name = filename_without_ext.split("_", 1)
+        # Segmente auswerten: [Kategorie]_[Name]_[Telefonnummer]
+        if len(parts) >= 3:
+            raw_cat = parts[0]
+            phone = parts[-1]
+            raw_name = "_".join(parts[1:-1])
+        elif len(parts) == 2:
+            raw_cat = parts[0]
+            raw_name = parts[1]
+            phone = None
         else:
-            category, name = "Sonstiges", filename_without_ext
+            raw_cat = "Sonstiges"
+            raw_name = filename_raw
+            phone = None
 
-        category = category.strip().capitalize()
-        name = name.replace("_", " ").strip()
+        # Formatierung von Kategorie & Name
+        category = clean_text(raw_cat).capitalize()
+        name = clean_text(raw_name)
+        
+        if not category:
+            category = "Sonstiges"
         categories.add(category)
         
-        filepath = f"menus/{f}"
+        # URL-safe Pfad für HTML-Verlinkung
+        filepath_encoded = f"menus/{quote(f)}"
+        
         full_filepath = os.path.join(MENU_DIR, f)
         mod_time = datetime.fromtimestamp(os.path.getmtime(full_filepath)).strftime("%d.%m.%Y")
+        
+        # Anrufen-Button erzeugen, falls eine Nummer vorhanden ist
+        phone_button_html = ""
+        if phone:
+            clean_phone = re.sub(r"[^\d+]", "", phone)
+            if clean_phone:
+                phone_button_html = f"""
+                <a href="tel:{clean_phone}" class="btn btn-phone">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.5 19.5 0 0 1-3-3 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    <span>Anrufen</span>
+                </a>
+                """
         
         cards_html += f"""
         <article class="card" data-category="{category}">
@@ -44,18 +82,21 @@ else:
                     Stand: {mod_time}
                 </p>
             </div>
-            <a href="{filepath}" target="_blank" rel="noopener" class="btn">
-                <span>Speisekarte öffnen</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
+            <div class="actions">
+                <a href="{filepath_encoded}" target="_blank" rel="noopener" class="btn btn-pdf">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    <span>Karte</span>
+                </a>
+                {phone_button_html}
+            </div>
         </article>
         """
 
 # Filter-Buttons HTML dynamisch erzeugen
 sorted_categories = sorted(list(categories))
-filter_buttons_html = '<button class="filter-btn active" onclick="filterCategory(\'all\')">Alle</button>'
+filter_buttons_html = '<button class="filter-btn active" onclick="filterCategory(\'all\', event)">Alle</button>'
 for cat in sorted_categories:
-    filter_buttons_html += f'<button class="filter-btn" onclick="filterCategory(\'{cat}\')">{cat}</button>'
+    filter_buttons_html += f'<button class="filter-btn" onclick="filterCategory(\'{cat}\', event)">{cat}</button>'
 
 html_content = f"""<!DOCTYPE html>
 <html lang="de">
@@ -71,6 +112,8 @@ html_content = f"""<!DOCTYPE html>
             --text-muted: #64748b;
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-hover: #15803d;
             --accent-bg: #eff6ff;
             --border-color: #e2e8f0;
             --radius: 16px;
@@ -109,7 +152,6 @@ html_content = f"""<!DOCTYPE html>
             color: var(--text-muted);
         }}
 
-        /* Horizontal scrollbare Filter-Leiste für Mobilgeräte */
         .filter-container {{
             display: flex;
             gap: 8px;
@@ -152,7 +194,7 @@ html_content = f"""<!DOCTYPE html>
                 max-width: 900px;
             }}
             .grid {{
-                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }}
             header h1 {{
                 font-size: 2rem;
@@ -168,7 +210,6 @@ html_content = f"""<!DOCTYPE html>
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.2s ease, opacity 0.2s ease;
         }}
 
         .card.hidden {{
@@ -207,75 +248,34 @@ html_content = f"""<!DOCTYPE html>
             gap: 6px;
         }}
 
+        .actions {{
+            display: flex;
+            gap: 10px;
+        }}
+
         .btn {{
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            background-color: var(--primary);
+            gap: 6px;
             color: #ffffff;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.95rem;
-            padding: 12px 16px;
+            font-size: 0.9rem;
+            padding: 10px 12px;
             border-radius: 10px;
             transition: background-color 0.15s ease;
             -webkit-tap-highlight-color: transparent;
         }}
 
-        .btn:hover {{
+        .btn-pdf {{
+            background-color: var(--primary);
+        }}
+
+        .btn-pdf:hover {{
             background-color: var(--primary-hover);
         }}
 
-        .no-cards {{
-            text-align: center;
-            padding: 40px 20px;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            border: 1px dashed var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }}
-    </style>
-</head>
-<body>
-    <header>
-        <h1>🍕 Mittagspause</h1>
-        <p>Aktuelle Speisekarten im Überblick</p>
-    </header>
-
-    <nav class="filter-container">
-        {filter_buttons_html}
-    </nav>
-
-    <main class="grid">
-        {cards_html}
-    </main>
-
-    <script>
-        function filterCategory(cat) {{
-            // Button-Styles aktualisieren
-            document.querySelectorAll('.filter-btn').forEach(btn => {{
-                btn.classList.remove('active');
-            }});
-            event.target.classList.add('active');
-
-            // Kacheln filtern
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {{
-                if (cat === 'all' || card.getAttribute('data-category') === cat) {{
-                    card.classList.remove('hidden');
-                }} else {{
-                    card.classList.add('hidden');
-                }}
-            }});
-        }}
-    </script>
-</body>
-</html>
-"""
-
-with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
-    out.write(html_content)
-
-print(f"index.html erfolgreich mit {len(files)} Speisekarte(n) und {len(categories)} Kategorie(n) erstellt.")
+        .btn-phone {{
+            background-color:
