@@ -1,37 +1,40 @@
-name: Build and Deploy to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
       - main
 
+  # Ermöglicht das manuelle Ausführen über den "Actions"-Tab in GitHub
+  workflow_dispatch:
+
+# Verhindert parallele Deployments und bricht ältere Läufe automatisch ab
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+# Setzt notwendige Rechte für den GITHUB_TOKEN
 permissions:
   contents: read
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Code auschecken
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Python einrichten
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
-      - name: Build Index Page
-        run: |
-          python build.py
-          ls -la
+      - name: index.html generieren
+        run: python build.py
 
-      - name: Upload Pages Artifact
+      - name: Artifact für Pages hochladen
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
@@ -43,6 +46,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Auf GitHub Pages deployen
         id: deployment
         uses: actions/deploy-pages@v4
