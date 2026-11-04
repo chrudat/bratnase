@@ -40,7 +40,7 @@
 
         header {
             max-width: 600px;
-            margin: 0 auto 16px;
+            margin: 0 auto 20px;
         }
 
         /* Banner Styling */
@@ -64,40 +64,6 @@
             max-width: 420px;
             height: auto;
             display: block;
-        }
-
-        /* Live-Suchleiste Styling */
-        .search-container {
-            position: relative;
-            max-width: 600px;
-            margin: 0 auto 16px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 16px 12px 42px;
-            font-size: 0.95rem;
-            border-radius: 999px;
-            border: 1px solid var(--border-color);
-            background-color: #ffffff;
-            color: var(--text-main);
-            outline: none;
-            box-shadow: var(--shadow);
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            pointer-events: none;
         }
 
         /* Filter-Buttons Container */
@@ -140,7 +106,7 @@
         }
 
         @media (min-width: 640px) {
-            .grid, .filter-container, header, .banner-container, .search-container {
+            .grid, .filter-container, header, .banner-container {
                 max-width: 900px;
             }
             .grid {
@@ -212,7 +178,7 @@
             flex: 1;
             display: flex;
             align-items: center;
-            justify-content: center; /* Waagerechte Zentrierung */
+            justify-content: center;
             gap: 6px;
             color: #ffffff;
             text-decoration: none;
@@ -253,90 +219,4 @@
             background: var(--card-bg);
             border-radius: var(--radius);
             border: 1px dashed var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            grid-column: 1 / -1;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="banner-container">
-            <svg class="banner-svg" viewBox="0 0 400 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Hintergrund Akzent-Kreise -->
-                <circle cx="50" cy="45" r="35" fill="#2563eb" fill-opacity="0.08" />
-                <circle cx="350" cy="45" r="30" fill="#2563eb" fill-opacity="0.06" />
-                
-                <!-- Speisekarte / Menu Card Icon -->
-                <rect x="145" y="15" width="45" height="60" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="2.5"/>
-                <line x1="155" y1="28" x2="175" y2="28" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="155" y1="38" x2="170" y2="38" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-                <line x1="155" y1="46" x2="175" y2="46" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-                <line x1="155" y1="54" x2="165" y2="54" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-                
-                <!-- Teller & Bestecke Icons -->
-                <circle cx="225" cy="45" r="22" fill="#ffffff" stroke="#2563eb" stroke-width="2.5"/>
-                <circle cx="225" cy="45" r="16" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="3 3"/>
-                
-                <!-- Gabel (Links) -->
-                <path d="M195 32V44M192 32V38C192 39.6569 193.343 41 195 41C196.657 41 198 39.6569 198 38V32M195 41V58" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
-                
-                <!-- Messer (Rechts) -->
-                <path d="M255 32V58M255 32C258.5 32 260 35 260 41V44H255" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                
-                <!-- Dekorative Sterne / Sparkles -->
-                <path d="M125 25L127 30L132 32L127 34L125 39L123 34L118 32L123 30L125 25Z" fill="#2563eb" fill-opacity="0.3"/>
-                <path d="M275 55L276.5 58.5L280 60L276.5 61.5L275 65L273.5 61.5L270 60L273.5 58.5L275 55Z" fill="#2563eb" fill-opacity="0.4"/>
-            </svg>
-        </div>
-    </header>
-
-    <div class="search-container">
-        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input type="text" id="searchInput" class="search-input" placeholder="Speisekarte, Ort oder Kategorie suchen..." oninput="filterCards()">
-    </div>
-
-    <nav class="filter-container">
-        <!--FILTER_BUTTONS-->
-    </nav>
-
-    <main class="grid" id="menuGrid">
-        <!--CARDS_HTML-->
-    </main>
-
-    <script>
-        let currentCategory = 'all';
-
-        function filterCategory(cat, evt) {
-            currentCategory = cat;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            evt.target.classList.add('active');
-            filterCards();
-        }
-
-        function filterCards() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.card');
-
-            cards.forEach(card => {
-                const rawCategories = card.getAttribute('data-category') || '';
-                const categoryArray = rawCategories.split(',');
-                const cardContent = card.textContent.toLowerCase();
-
-                // Prüft, ob die gewählte Kategorie enthalten ist
-                const matchesCategory = (currentCategory === 'all' || categoryArray.includes(currentCategory));
-                // Prüft, ob der Suchbegriff irgendwo in der Kachel (Name, Ort, Kategorie, Telefon) vorkommt
-                const matchesSearch = (cardContent.includes(searchTerm) || rawCategories.toLowerCase().includes(searchTerm));
-
-                if (matchesCategory && matchesSearch) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+            color: var(--text
