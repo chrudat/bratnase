@@ -160,20 +160,27 @@
         }
 
         .btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 10px 12px;
-            border-radius: 10px;
-            transition: background-color 0.15s ease;
-            -webkit-tap-highlight-color: transparent;
-        }
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Zentriert Icon und Text waagerecht */
+    gap: 6px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: background-color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    text-align: center;
+}
+
+.btn span {
+    display: inline-block;
+    text-align: center;
+    word-break: break-word; /* Verhindert Umbrüche bei langen Nummern auf kleinen Displays */
+}
 
         .btn-pdf {
             background-color: var(--primary);
