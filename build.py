@@ -174,4 +174,55 @@ html_content = f"""<!DOCTYPE html>
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
-            transition:
+            transition: all 0.15s ease;
+        }}
+
+        .filter-btn.active {{
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }}
+
+        .grid {{
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }}
+
+        @media (min-width: 640px) {{
+            .grid, .filter-container, header, .banner-container {{
+                max-width: 900px;
+            }}
+            .grid {{
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }}
+        }}
+
+        .card {{
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }}
+
+        .card.hidden {{
+            display: none;
+        }}
+
+        .card-body {{
+            margin-bottom: 16px;
+        }}
+
+        .badge {{
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--accent-bg);
