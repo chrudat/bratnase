@@ -72,4 +72,106 @@ else:
                 <span class="badge">{category}</span>
                 <h2 class="card-title">{name}</h2>
                 <p class="card-meta">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Stand: {mod_time}
+                </p>
+            </div>
+            <div class="actions">
+                <a href="{filepath_encoded}" target="_blank" rel="noopener" class="btn btn-pdf">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    <span>Karte</span>
+                </a>
+                {phone_button_html}
+            </div>
+        </article>
+        """
+
+sorted_categories = sorted(list(categories))
+filter_buttons_html = '<button class="filter-btn active" onclick="filterCategory(\'all\', event)">Alle</button>'
+for cat in sorted_categories:
+    filter_buttons_html += f'<button class="filter-btn" onclick="filterCategory(\'{cat}\', event)">{cat}</button>'
+
+html_content = f"""<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speisekarten</title>
+    <style>
+        :root {{
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-hover: #15803d;
+            --accent-bg: #eff6ff;
+            --border-color: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+        }}
+
+        * {{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }}
+
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px 16px 40px;
+            -webkit-font-smoothing: antialiased;
+        }}
+
+        header {{
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }}
+
+        .banner-container {{
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid var(--border-color);
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }}
+
+        .banner-svg {{
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            display: block;
+        }}
+
+        .filter-container {{
+            display: flex;
+            gap: 8px;
+            max-width: 600px;
+            margin: 0 auto 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }}
+
+        .filter-btn {{
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition:
