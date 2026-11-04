@@ -23,7 +23,6 @@ def clean_text(text: str) -> str:
     return text
 
 def is_phone_number(text: str) -> bool:
-    """Prüft, ob ein Textsegment vorrangig aus Ziffern/Plus besteht (Telefonnummer)."""
     clean = re.sub(r"[^\d+]", "", text)
     return len(clean) >= 3 and (text.startswith("+") or text.startswith("0") or text.isdigit())
 
@@ -40,7 +39,6 @@ else:
         
         # Segmente flexibel auswerten
         if len(parts) >= 4:
-            # Schema: Kategorie_Name_Ort_Telefon
             raw_cat = parts[0]
             raw_name = "_".join(parts[1:-2])
             location = parts[-2]
@@ -49,7 +47,6 @@ else:
             raw_cat = parts[0]
             raw_name = parts[1]
             last_part = parts[2]
-            # Prüfen, ob das 3. Segment eine Telefonnummer oder ein Ort ist
             if is_phone_number(last_part):
                 phone = last_part
             else:
@@ -61,13 +58,20 @@ else:
             raw_cat = "Sonstiges"
             raw_name = filename_raw
 
-        category = clean_text(raw_cat).capitalize()
+        # Mehrere Kategorien verarbeiten (getrennt durch '+' oder ',')
+        raw_cat_list = [c.strip() for c in re.split(r'[\+,]', raw_cat) if c.strip()]
+        card_categories = []
+        for c in raw_cat_list:
+            cat_clean = clean_text(c).capitalize()
+            if cat_clean:
+                card_categories.append(cat_clean)
+                categories.add(cat_clean)
+
+        if not card_categories:
+            card_categories = ["Sonstiges"]
+            categories.add("Sonstiges")
+
         name = clean_text(raw_name)
-        
-        if not category:
-            category = "Sonstiges"
-        categories.add(category)
-        
         full_filepath = os.path.join(MENU_DIR, f)
         
         # Link-Ziel und Button-Bezeichnung bestimmen (.pdf oder .url)
@@ -79,7 +83,7 @@ else:
             target_url = f"menus/{quote(f)}"
             button_label = "Speisekarte"
 
-        # Ortsanzeige aufbauen (falls angegeben)
+        # Ortsanzeige aufbauen
         location_html = ""
         if location:
             clean_loc = clean_text(location)
@@ -91,7 +95,7 @@ else:
                     f'</p>'
                 )
 
-        # Telefon-Button aufbauen (falls angegeben)
+        # Telefon-Button aufbauen
         phone_button_html = ""
         if phone:
             clean_phone = re.sub(r"[^\d+]", "", phone)
@@ -103,10 +107,14 @@ else:
                     f'<span>{display_phone}</span></a>'
                 )
         
+        # HTML-Badges für alle Kategorien erzeugen
+        badges_html = "".join([f'<span class="badge">{cat}</span>' for cat in card_categories])
+        data_categories = ",".join(card_categories)
+
         cards_html += (
-            f'<article class="card" data-category="{category}">'
+            f'<article class="card" data-category="{data_categories}">'
             f'<div class="card-body">'
-            f'<span class="badge">{category}</span>'
+            f'<div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">{badges_html}</div>'
             f'<h2 class="card-title">{name}</h2>'
             f'{location_html}'
             f'</div>'
@@ -133,4 +141,4 @@ final_html = final_html.replace("<!--CARDS_HTML-->", cards_html)
 with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
     out.write(final_html)
 
-print("index.html erfolgreich mit Ortsanzeige statt Datum generiert.")
+print("index.html erfolgreich mit Mehrfachkategorien generiert.")
