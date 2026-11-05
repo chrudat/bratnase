@@ -1,4 +1,4 @@
-name: Build and Deploy to Netcup via FTP
+name: Build and Deploy to Netcup via SFTP
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: "ftp-deploy"
+  group: "sftp-deploy"
   cancel-in-progress: true
 
 jobs:
@@ -25,15 +25,15 @@ jobs:
       - name: index.html mit build.py generieren
         run: python build.py
 
-      - name: Dateien per FTP auf Webspace hochladen
+      - name: Dateien per SFTP auf Netcup hochladen
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Passe den Zielordner auf deinem Webspace an (z. B. /httpdocs/mittag oder /httpdocs)
+          port: 22
+          protocol: sftp
           server-dir: /httpdocs/
-          # Überträgt nur die benötigten Dateien für die Webseite
           exclude: |
             **/.git*
             **/.git*/**
