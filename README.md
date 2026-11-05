@@ -1,7 +1,7 @@
 # 🍕 Speisekarten-Verzeichnis
 
 Willkommen im Speisekarten-Verzeichnis! Hier sammeln wir aktuelle Speisekarten für unsere Mittagspausen. 
-Neue Speisekarten oder Online-Links können ganz einfach direkt über die GitHub-Weboberfläche hinzugefügt oder aktualisiert werden.
+Neue Speisekarten oder Online-Links können ganz einfach direkt über die GitHub-Weboberfläche hinzugefügt, aktualisiert oder gelöscht werden.
 
 ---
 
@@ -13,9 +13,9 @@ Gehe oben in den Ordner **`menus/`** und klicke oben rechts auf **Add file** ➔
 
 Damit die Speisekarte automatisch richtig einsortiert, benannt und mit Anruf-Button versehen wird, muss die Datei nach folgendem Muster benannt werden:
 
-`[Kategorie(n)]_[Name]_[Ort]_[Telefon].[pdf|url]`
+`[Name]_[Kategorie(n)]_[Ort]_[Telefon].[pdf|url]`
 
-> **Tipp für Mehrfachkategorien:** Wenn ein Lokal verschiedene Speisen anbietet (z. B. Döner, Pizza und Salat), kannst du die Kategorien im ersten Abschnitt einfach mit einem Pluszeichen (`+`) oder Komma (`,`) trennen.
+> **Tipp:** Durch den Namen am Anfang sind alle Speisekarten im Ordner alphabetisch nach Restaurants sortiert. So lassen sich alte oder geschlossene Läden im Repository blitzschnell finden und löschen!
 
 ---
 
@@ -23,11 +23,11 @@ Damit die Speisekarte automatisch richtig einsortiert, benannt und mit Anruf-But
 
 | Fall | Dateiname | Ergebnis auf der Webseite |
 | :--- | :--- | :--- |
-| **Mehrfachkategorien** | `Döner+Pizza+Salat_Edessa_Garbsen_0511123456.pdf` | Zeigt die Badges **Döner**, **Pizza** und **Salat**. Der Eintrag wird bei allen drei Kategorie-Filterbuttons gefunden. |
-| **PDF mit Ort & Telefon** | `Italienisch_Pizza Luigi_Hannover_0511123456.pdf` | Kategorie: **Italienisch**<br>Name: **Pizza Luigi**<br>Ort: **Hannover**<br>Button: **0511123456** (Anrufen) |
-| **PDF nur mit Ort** | `Döner_Edessa_Garbsen.pdf` | Kategorie: **Döner**<br>Name: **Edessa**<br>Ort: **Garbsen** |
-| **PDF nur mit Telefon** | `Griechisch_Syrtaki_01701234567.pdf` | Kategorie: **Griechisch**<br>Name: **Syrtaki**<br>Button: **01701234567** (Anrufen) |
-| **Web-Link statt PDF** | `Burger+Asia_Bambus_Hannover_0511987654.url` | Zeigt statt des PDF-Buttons einen Button **"Webseite"** zur Online-Speisekarte |
+| **Name + Mehrfachkategorien + Ort + Telefon** | `Edessa_Döner+Pizza+Salat_Garbsen_0511123456.pdf` | Name: **Edessa**<br>Badges: **Döner**, **Pizza**, **Salat**<br>Ort: **Garbsen**<br>Button: **0511123456** (Anrufen) |
+| **PDF mit Ort & Telefon** | `Pizza Luigi_Italienisch_Hannover_051199999.pdf` | Name: **Pizza Luigi**<br>Kategorie: **Italienisch**<br>Ort: **Hannover**<br>Button: **051199999** (Anrufen) |
+| **PDF ohne Ort** | `Syrtaki_Griechisch_01701234567.pdf` | Name: **Syrtaki**<br>Kategorie: **Griechisch**<br>Button: **01701234567** (Anrufen) |
+| **PDF ohne Telefon** | `Bambus_Asia_Garbsen.pdf` | Name: **Bambus**<br>Kategorie: **Asia**<br>Ort: **Garbsen** |
+| **Web-Link statt PDF** | `Jim Block_Burger+Pizza_Hannover_0511000.url` | Zeigt statt des PDF-Buttons einen Button **"Webseite"** zur Online-Speisekarte |
 
 ---
 
@@ -36,7 +36,7 @@ Damit die Speisekarte automatisch richtig einsortiert, benannt und mit Anruf-But
 Hat das Restaurant eine eigene Online-Speisekarte (statt einer PDF)?
 
 1. Klicke im Ordner `menus/` auf **Add file** ➔ **Create new file**.
-2. Nenne die Datei nach dem Schema oben (z. B. `Burger+Pizza_Jim Block_Hannover_0511000.url`).
+2. Nenne die Datei nach dem Schema oben (z. B. `Jim Block_Burger+Pizza_Hannover_0511000.url`).
 3. Füge in das große Textfeld einfach **nur die Internetadresse** ein:
    ```text
    [https://www.jim-block.de/speisekarte](https://www.jim-block.de/speisekarte)
