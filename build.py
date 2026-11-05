@@ -34,29 +34,31 @@ else:
         filename_raw = unicodedata.normalize("NFC", f.rsplit(".", 1)[0])
         parts = filename_raw.split("_")
         
+        raw_name = ""
+        raw_cat = ""
         phone = None
         location = None
         
-        # Segmente flexibel auswerten
+        # Neues Schema: Name_Kategorie(n)_Ort_Telefon
         if len(parts) >= 4:
-            raw_cat = parts[0]
-            raw_name = "_".join(parts[1:-2])
+            raw_name = parts[0]
+            raw_cat = parts[1]
             location = parts[-2]
             phone = parts[-1]
         elif len(parts) == 3:
-            raw_cat = parts[0]
-            raw_name = parts[1]
+            raw_name = parts[0]
+            raw_cat = parts[1]
             last_part = parts[2]
             if is_phone_number(last_part):
                 phone = last_part
             else:
                 location = last_part
         elif len(parts) == 2:
-            raw_cat = parts[0]
-            raw_name = parts[1]
+            raw_name = parts[0]
+            raw_cat = parts[1]
         else:
-            raw_cat = "Sonstiges"
             raw_name = filename_raw
+            raw_cat = "Sonstiges"
 
         # Mehrere Kategorien verarbeiten (getrennt durch '+' oder ',')
         raw_cat_list = [c.strip() for c in re.split(r'[\+,]', raw_cat) if c.strip()]
@@ -141,4 +143,4 @@ final_html = final_html.replace("<!--CARDS_HTML-->", cards_html)
 with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
     out.write(final_html)
 
-print("index.html erfolgreich mit Mehrfachkategorien generiert.")
+print("index.html erfolgreich mit Namens-Schema [Name]_[Kategorien]_[Ort]_[Telefon] generiert.")
