@@ -9,6 +9,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍕</text></svg>">
     
     <style>
+        /* Light Mode (Standard) */
         :root {
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
@@ -22,6 +23,37 @@
             --border-color: #e2e8f0;
             --radius: 16px;
             --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+
+            /* Banner Gradient */
+            --banner-gradient-start: #eff6ff;
+            --banner-gradient-end: #dbeafe;
+            --banner-svg-card-fill: #ffffff;
+            --banner-svg-text-stroke: #64748b;
+            --banner-svg-dash-stroke: #e2e8f0;
+        }
+
+        /* Dark Mode (Automatisch bei dunklem System-Design) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0f172a;
+                --card-bg: #1e293b;
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --primary: #3b82f6;
+                --primary-hover: #2563eb;
+                --success: #22c55e;
+                --success-hover: #16a34a;
+                --accent-bg: #1e3a8a;
+                --border-color: #334155;
+                --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+
+                /* Banner Gradient Dark Mode */
+                --banner-gradient-start: #1e293b;
+                --banner-gradient-end: #0f172a;
+                --banner-svg-card-fill: #334155;
+                --banner-svg-text-stroke: #94a3b8;
+                --banner-svg-dash-stroke: #475569;
+            }
         }
 
         * {
@@ -36,6 +68,7 @@
             color: var(--text-main);
             padding: 20px 16px 40px;
             -webkit-font-smoothing: antialiased;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         header {
@@ -50,7 +83,7 @@
             margin: 0 auto;
             border-radius: var(--radius);
             overflow: hidden;
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            background: linear-gradient(135deg, var(--banner-gradient-start) 0%, var(--banner-gradient-end) 100%);
             border: 1px solid var(--border-color);
             padding: 20px 16px;
             display: flex;
@@ -66,6 +99,18 @@
             display: block;
         }
 
+        .banner-svg rect.banner-card {
+            fill: var(--banner-svg-card-fill);
+        }
+
+        .banner-svg line.banner-line {
+            stroke: var(--banner-svg-text-stroke);
+        }
+
+        .banner-svg circle.banner-dash {
+            stroke: var(--banner-svg-dash-stroke);
+        }
+
         /* Filter-Buttons Container */
         .filter-container {
             display: flex;
@@ -78,7 +123,7 @@
         }
 
         .filter-btn {
-            background: #ffffff;
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-muted);
             padding: 8px 16px;
@@ -232,62 +277,13 @@
                 <circle cx="50" cy="45" r="35" fill="#2563eb" fill-opacity="0.08" />
                 <circle cx="350" cy="45" r="30" fill="#2563eb" fill-opacity="0.06" />
                 
-                <rect x="145" y="15" width="45" height="60" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="2.5"/>
+                <rect class="banner-card" x="145" y="15" width="45" height="60" rx="6" stroke="#2563eb" stroke-width="2.5"/>
                 <line x1="155" y1="28" x2="175" y2="28" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="155" y1="38" x2="170" y2="38" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-                <line x1="155" y1="46" x2="175" y2="46" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
-                <line x1="155" y1="54" x2="165" y2="54" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+                <line class="banner-line" x1="155" y1="38" x2="170" y2="38" stroke-width="2" stroke-linecap="round"/>
+                <line class="banner-line" x1="155" y1="46" x2="175" y2="46" stroke-width="2" stroke-linecap="round"/>
+                <line class="banner-line" x1="155" y1="54" x2="165" y2="54" stroke-width="2" stroke-linecap="round"/>
                 
-                <circle cx="225" cy="45" r="22" fill="#ffffff" stroke="#2563eb" stroke-width="2.5"/>
-                <circle cx="225" cy="45" r="16" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <circle class="banner-card" cx="225" cy="45" r="22" stroke="#2563eb" stroke-width="2.5"/>
+                <circle class="banner-dash" cx="225" cy="45" r="16" stroke-width="1.5" stroke-dasharray="3 3"/>
                 
-                <path d="M195 32V44M192 32V38C192 39.6569 193.343 41 195 41C196.657 41 198 39.6569 198 38V32M195 41V58" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
-                <path d="M255 32V58M255 32C258.5 32 260 35 260 41V44H255" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                
-                <path d="M125 25L127 30L132 32L127 34L125 39L123 34L118 32L123 30L125 25Z" fill="#2563eb" fill-opacity="0.3"/>
-                <path d="M275 55L276.5 58.5L280 60L276.5 61.5L275 65L273.5 61.5L270 60L273.5 58.5L275 55Z" fill="#2563eb" fill-opacity="0.4"/>
-            </svg>
-        </div>
-    </header>
-
-    <nav class="filter-container">
-        <!--FILTER_BUTTONS-->
-    </nav>
-
-    <main class="grid" id="menuGrid">
-        <!--CARDS_HTML-->
-    </main>
-
-    <script>
-        let currentCategory = 'all';
-
-        function filterCategory(cat, evt) {
-            currentCategory = cat;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            if (evt && evt.target) {
-                evt.target.classList.add('active');
-            }
-            filterCards();
-        }
-
-        function filterCards() {
-            const cards = document.querySelectorAll('.card');
-
-            cards.forEach(card => {
-                const rawCategories = card.getAttribute('data-category') || '';
-                const categoryArray = rawCategories.split(',');
-
-                const matchesCategory = (currentCategory === 'all' || categoryArray.includes(currentCategory));
-
-                if (matchesCategory) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+                <path d="M195 32V44M192 32V38C192 39.6569 193.343 41 195 41C196.657 41 198 39.6569 198 38V32M195 4
