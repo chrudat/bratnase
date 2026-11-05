@@ -39,7 +39,7 @@ else:
         phone = None
         location = None
         
-        # Neues Schema: Name_Kategorie(n)_Ort_Telefon
+        # Schema: Name_Kategorie(n)_Ort_Telefon
         if len(parts) >= 4:
             raw_name = parts[0]
             raw_cat = parts[1]
@@ -72,6 +72,9 @@ else:
         if not card_categories:
             card_categories = ["Sonstiges"]
             categories.add("Sonstiges")
+
+        # KÖNIGSKLASSE: Alphabetische Sortierung der Kategorien pro Kachel
+        card_categories = sorted(list(set(card_categories)))
 
         name = clean_text(raw_name)
         full_filepath = os.path.join(MENU_DIR, f)
@@ -109,7 +112,7 @@ else:
                     f'<span>{display_phone}</span></a>'
                 )
         
-        # HTML-Badges für alle Kategorien erzeugen
+        # HTML-Badges in alphabetischer Reihenfolge erzeugen
         badges_html = "".join([f'<span class="badge">{cat}</span>' for cat in card_categories])
         data_categories = ",".join(card_categories)
 
@@ -143,4 +146,4 @@ final_html = final_html.replace("<!--CARDS_HTML-->", cards_html)
 with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
     out.write(final_html)
 
-print("index.html erfolgreich mit Namens-Schema [Name]_[Kategorien]_[Ort]_[Telefon] generiert.")
+print("index.html erfolgreich mit alphabetisch sortierten Kachel-Badges generiert.")
