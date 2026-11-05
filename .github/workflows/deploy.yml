@@ -1,29 +1,20 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy to Netcup via FTP
 
 on:
   push:
     branches:
       - main
-
-  # Ermöglicht das manuelle Ausführen über den "Actions"-Tab in GitHub
   workflow_dispatch:
 
-# Verhindert parallele Deployments und bricht ältere Läufe automatisch ab
 concurrency:
-  group: pages
+  group: "ftp-deploy"
   cancel-in-progress: true
 
-# Setzt notwendige Rechte für den GITHUB_TOKEN
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Code auschecken
+      - name: Repository auschecken
         uses: actions/checkout@v4
 
       - name: Python einrichten
@@ -31,21 +22,21 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: index.html generieren
+      - name: index.html mit build.py generieren
         run: python build.py
 
-      - name: Artifact für Pages hochladen
-        uses: actions/upload-pages-artifact@v3
+      - name: Dateien per FTP auf Webspace hochladen
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          path: '.'
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Auf GitHub Pages deployen
-        id: deployment
-        uses: actions/deploy-pages@v4
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # Passe den Zielordner auf deinem Webspace an (z. B. /httpdocs/mittag oder /httpdocs)
+          server-dir: /httpdocs/
+          # Überträgt nur die benötigten Dateien für die Webseite
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            README.md
+            template.html
