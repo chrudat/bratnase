@@ -24,15 +24,14 @@
             --radius: 16px;
             --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
 
-            /* Banner Gradient */
+            /* Banner Gradient Light */
             --banner-gradient-start: #eff6ff;
             --banner-gradient-end: #dbeafe;
             --banner-svg-card-fill: #ffffff;
-            --banner-svg-text-stroke: #64748b;
             --banner-svg-dash-stroke: #e2e8f0;
         }
 
-        /* Dark Mode (Automatisch bei dunklem System-Design) */
+        /* Dark Mode (Automatisch) */
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-color: #0f172a;
@@ -47,7 +46,83 @@
                 --border-color: #334155;
                 --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
 
-                /* Banner Gradient Dark Mode */
+                /* Banner Gradient Dark */
                 --banner-gradient-start: #1e293b;
                 --banner-gradient-end: #0f172a;
-                --banner-svg
+                --banner-svg-card-fill: #334155;
+                --banner-svg-dash-stroke: #475569;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px 16px 40px;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        header {
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        /* Banner Styling */
+        .banner-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--banner-gradient-start) 0%, var(--banner-gradient-end) 100%);
+            border: 1px solid var(--border-color);
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+
+        .banner-svg {
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            display: block;
+        }
+
+        .banner-svg circle.banner-card {
+            fill: var(--banner-svg-card-fill);
+        }
+
+        .banner-svg circle.banner-dash {
+            stroke: var(--banner-svg-dash-stroke);
+        }
+
+        /* Filter-Buttons Container */
+        .filter-container {
+            display: flex;
+            gap: 8px;
+            max-width: 600px;
+            margin: 0 auto 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
