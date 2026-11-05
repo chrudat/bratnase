@@ -5,6 +5,15 @@ Neue Speisekarten oder Online-Links können ganz einfach direkt über die GitHub
 
 ---
 
+## 🎨 Design & Funktionen
+
+* **Header-Grafik**: Minimalistisches Gedeck (Teller & Besteck) im Vektor-Design.
+* **SVG-Favicon**: Dynamisches Tab-Icon, das sich automatisch an das Farbschema des Systems anpasst.
+* **Dark Mode**: Automatische Umschaltung bei dunklem Erscheinungsbild auf Smartphone oder PC.
+* **Alphabetische Sortierung**: Restaurants und Kategorie-Badges auf den Kacheln werden automatisch von A bis Z sortiert.
+
+---
+
 ## 📁 Neue Speisekarte hinzufügen
 
 Gehe oben in den Ordner **`menus/`** und klicke oben rechts auf **Add file** ➔ **Upload files** (für PDFs) oder **Create new file** (für Links).
@@ -23,7 +32,7 @@ Damit die Speisekarte automatisch richtig einsortiert, benannt und mit Anruf-But
 
 | Fall | Dateiname | Ergebnis auf der Webseite |
 | :--- | :--- | :--- |
-| **Name + Mehrfachkategorien + Ort + Telefon** | `Edessa_Döner+Pizza+Salat_Garbsen_0511123456.pdf` | Name: **Edessa**<br>Badges: **Döner**, **Pizza**, **Salat**<br>Ort: **Garbsen**<br>Button: **0511123456** (Anrufen) |
+| **Name + Mehrfachkategorien + Ort + Telefon** | `Edessa_Döner+Pizza+Salat_Garbsen_0511123456.pdf` | Name: **Edessa**<br>Badges: **Döner**, **Pizza**, **Salat** *(A-Z sortiert)*<br>Ort: **Garbsen**<br>Button: **0511123456** (Anrufen) |
 | **PDF mit Ort & Telefon** | `Pizza Luigi_Italienisch_Hannover_051199999.pdf` | Name: **Pizza Luigi**<br>Kategorie: **Italienisch**<br>Ort: **Hannover**<br>Button: **051199999** (Anrufen) |
 | **PDF ohne Ort** | `Syrtaki_Griechisch_01701234567.pdf` | Name: **Syrtaki**<br>Kategorie: **Griechisch**<br>Button: **01701234567** (Anrufen) |
 | **PDF ohne Telefon** | `Bambus_Asia_Garbsen.pdf` | Name: **Bambus**<br>Kategorie: **Asia**<br>Ort: **Garbsen** |
