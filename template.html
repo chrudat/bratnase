@@ -24,7 +24,6 @@
             --radius: 16px;
             --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
 
-            /* Banner Gradient Light */
             --banner-gradient-start: #eff6ff;
             --banner-gradient-end: #dbeafe;
             --banner-svg-card-fill: #ffffff;
@@ -46,7 +45,6 @@
                 --border-color: #334155;
                 --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
 
-                /* Banner Gradient Dark */
                 --banner-gradient-start: #1e293b;
                 --banner-gradient-end: #0f172a;
                 --banner-svg-card-fill: #334155;
@@ -105,11 +103,11 @@
             stroke: var(--banner-svg-dash-stroke);
         }
 
-        /* Filter-Buttons Container (Umbrüche auf schmalen Screens) */
+        /* Filter-Buttons Container mit automatischem Zeilenumbruch */
         .filter-container {
             display: flex;
-            flex-wrap: wrap; /* Wichtig: Erlaubt den automatischen Zeilenumbruch */
-            justify-content: center; /* Zentriert die Buttons elegant auf dem Bildschirm */
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 8px;
             max-width: 600px;
             margin: 0 auto 24px;
@@ -135,11 +133,19 @@
             border-color: var(--primary);
         }
 
+        /* Layout Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
         @media (min-width: 640px) {
             .grid, .filter-container, header, .banner-container {
                 max-width: 900px;
             }
-        }
             .grid {
                 grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
@@ -259,7 +265,6 @@
 <body>
     <header>
         <div class="banner-container">
-            <!-- Option 1: Minimalistisches Gedeck (Teller & Besteck) -->
             <svg class="banner-svg" viewBox="0 0 400 90" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="200" cy="45" r="38" fill="#2563eb" fill-opacity="0.06" />
                 <circle class="banner-card" cx="200" cy="45" r="26" stroke="#2563eb" stroke-width="2.5"/>
