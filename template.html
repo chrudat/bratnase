@@ -99,7 +99,7 @@
             display: block;
         }
 
-        .banner-svg rect.banner-card {
+        .banner-svg rect.banner-card, .banner-svg circle.banner-card {
             fill: var(--banner-svg-card-fill);
         }
 
@@ -286,4 +286,53 @@
                 <circle class="banner-card" cx="225" cy="45" r="22" stroke="#2563eb" stroke-width="2.5"/>
                 <circle class="banner-dash" cx="225" cy="45" r="16" stroke-width="1.5" stroke-dasharray="3 3"/>
                 
-                <path d="M195 32V44M192 32V38C192 39.6569 193.343 41 195 41C196.657 41 198 39.6569 198 38V32M195 4
+                <path d="M195 32V44M192 32V38C192 39.6569 193.343 41 195 41C196.657 41 198 39.6569 198 38V32M195 41V58" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+                <path d="M255 32V58M255 32C258.5 32 260 35 260 41V44H255" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                
+                <path d="M125 25L127 30L132 32L127 34L125 39L123 34L118 32L123 30L125 25Z" fill="#2563eb" fill-opacity="0.3"/>
+                <path d="M275 55L276.5 58.5L280 60L276.5 61.5L275 65L273.5 61.5L270 60L273.5 58.5L275 55Z" fill="#2563eb" fill-opacity="0.4"/>
+            </svg>
+        </div>
+    </header>
+
+    <nav class="filter-container">
+        <!--FILTER_BUTTONS-->
+    </nav>
+
+    <main class="grid" id="menuGrid">
+        <!--CARDS_HTML-->
+    </main>
+
+    <script>
+        let currentCategory = 'all';
+
+        function filterCategory(cat, evt) {
+            currentCategory = cat;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (evt && evt.target) {
+                evt.target.classList.add('active');
+            }
+            filterCards();
+        }
+
+        function filterCards() {
+            const cards = document.querySelectorAll('.card');
+
+            cards.forEach(card => {
+                const rawCategories = card.getAttribute('data-category') || '';
+                const categoryArray = rawCategories.split(',');
+
+                const matchesCategory = (currentCategory === 'all' || categoryArray.includes(currentCategory));
+
+                if (matchesCategory) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
