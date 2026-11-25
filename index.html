@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speisekarten</title>
+    
+    <!-- Live SVG-Favicon (Minimalistisches Teller & Besteck Icon) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><style>circle.bg{fill:%232563eb;fill-opacity:0.1}circle.plate{fill:none;stroke:%232563eb;stroke-width:6}circle.dash{fill:none;stroke:%2364748b;stroke-width:4;stroke-dasharray:6 6}path.fork,path.knife{stroke:%232563eb;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;fill:none}@media (prefers-color-scheme:dark){circle.bg{fill:%233b82f6;fill-opacity:0.2}circle.plate{stroke:%233b82f6}circle.dash{stroke:%2394a3b8}path.fork,path.knife{stroke:%233b82f6}}</style><circle class='bg' cx='50' cy='50' r='48'/><circle class='plate' cx='50' cy='50' r='32'/><circle class='dash' cx='50' cy='50' r='23'/><path class='fork' d='M22 28v18M18 28v9c0 2.5 2 4.5 4 4.5s4-2 4-4.5v-9M22 41.5v28.5'/><path class='knife' d='M78 28v42M78 28c4.5 0 6.5 4 6.5 12v6H78'/></svg>">
+    
+    <style>
+        /* Light Mode (Standard) */
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-hover: #15803d;
+            --accent-bg: #eff6ff;
+            --border-color: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+
+            --banner-gradient-start: #eff6ff;
+            --banner-gradient-end: #dbeafe;
+            --banner-svg-card-fill: #ffffff;
+            --banner-svg-dash-stroke: #e2e8f0;
+        }
+
+        /* Dark Mode (Automatisch) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0f172a;
+                --card-bg: #1e293b;
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --primary: #3b82f6;
+                --primary-hover: #2563eb;
+                --success: #22c55e;
+                --success-hover: #16a34a;
+                --accent-bg: #1e3a8a;
+                --border-color: #334155;
+                --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+
+                --banner-gradient-start: #1e293b;
+                --banner-gradient-end: #0f172a;
+                --banner-svg-card-fill: #334155;
+                --banner-svg-dash-stroke: #475569;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px 16px 40px;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        header {
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        /* Banner Styling */
+        .banner-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--banner-gradient-start) 0%, var(--banner-gradient-end) 100%);
+            border: 1px solid var(--border-color);
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+
+        .banner-svg {
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            display: block;
+        }
+
+        .banner-svg circle.banner-card {
+            fill: var(--banner-svg-card-fill);
+        }
+
+        .banner-svg circle.banner-dash {
+            stroke: var(--banner-svg-dash-stroke);
+        }
+
+        /* Filter-Buttons Container mit automatischem Zeilenumbruch */
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            max-width: 600px;
+            margin: 0 auto 24px;
+            padding: 0 4px;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        /* Layout Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 640px) {
+            .grid, .filter-container, header, .banner-container {
+                max-width: 900px;
+            }
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        /* Kacheln & Inhalt */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card.hidden {
+            display: none !important;
+        }
+
+        .card-body {
+            margin-bottom: 16px;
+        }
+
+        .badges-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--accent-bg);
+            color: var(--primary);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+
+        .card-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Actions & Buttons */
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: background-color 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+            text-align: center;
+        }
+
+        .btn span {
+            display: inline-block;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        .btn-pdf {
+            background-color: var(--primary);
+        }
+
+        .btn-pdf:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-phone {
+            background-color: var(--success);
+        }
+
+        .btn-phone:hover {
+            background-color: var(--success-hover);
+        }
+
+        .no-cards {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px dashed var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="banner-container">
+            <svg class="banner-svg" viewBox="0 0 400 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="200" cy="45" r="38" fill="#2563eb" fill-opacity="0.06" />
+                <circle class="banner-card" cx="200" cy="45" r="26" stroke="#2563eb" stroke-width="2.5"/>
+                <circle class="banner-dash" cx="200" cy="45" r="19" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <path d="M165 30V43M162 30V36C162 37.6 163.3 39 165 39C166.7 39 168 37.6 168 36V30M165 39V60" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+                <path d="M235 30V60M235 30C238.5 30 240 33 240 39V43H235" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+    </header>
+
+    <nav class="filter-container">
+        <button class="filter-btn active" onclick="filterCategory('all', event)">Alle</button><button class="filter-btn" onclick="filterCategory('Asiatisch', event)">Asiatisch</button><button class="filter-btn" onclick="filterCategory('Burger', event)">Burger</button><button class="filter-btn" onclick="filterCategory('Döner', event)">Döner</button><button class="filter-btn" onclick="filterCategory('Griechisch', event)">Griechisch</button><button class="filter-btn" onclick="filterCategory('Pasta', event)">Pasta</button><button class="filter-btn" onclick="filterCategory('Pizza', event)">Pizza</button><button class="filter-btn" onclick="filterCategory('Pommes', event)">Pommes</button><button class="filter-btn" onclick="filterCategory('Salate', event)">Salate</button><button class="filter-btn" onclick="filterCategory('Schnitzel', event)">Schnitzel</button>
+    </nav>
+
+    <main class="grid" id="menuGrid">
+        <article class="card" data-category="Griechisch"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Griechisch</span></div><h2 class="card-title">Artemis</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Mellendorf</p></div><div class="actions"><a href="https://cdn.website.dish.co/media/da/ec/9599868/Speisekarte.pdf" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Webseite</span></a></div></article><article class="card" data-category="Burger,Döner,Schnitzel"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Burger</span><span class="badge">Döner</span><span class="badge">Schnitzel</span></div><h2 class="card-title">Edessa</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Bissendorf</p></div><div class="actions"><a href="menus/Edessa_Burger%2CD%C3%B6ner%2CSchnitzel_Bissendorf.pdf" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Speisekarte</span></a></div></article><article class="card" data-category="Pasta,Pizza"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Pasta</span><span class="badge">Pizza</span></div><h2 class="card-title">Italiano</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Mellendorf</p></div><div class="actions"><a href="https://ristorante-italiano.de/speisekarte/" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Webseite</span></a></div></article><article class="card" data-category="Burger,Pizza"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Burger</span><span class="badge">Pizza</span></div><h2 class="card-title">Pizza Haus</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Mellendorf</p></div><div class="actions"><a href="menus/Pizza%20Haus_Burger%2CPizza_Mellendorf.pdf" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Speisekarte</span></a></div></article><article class="card" data-category="Pizza"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Pizza</span></div><h2 class="card-title">Randy‘s Pizza</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Lindwedel</p></div><div class="actions"><a href="https://www.randys-pizza.de" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Webseite</span></a></div></article><article class="card" data-category="Pasta,Pizza"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Pasta</span><span class="badge">Pizza</span></div><h2 class="card-title">Romantico</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Mellendorf</p></div><div class="actions"><a href="menus/Romantico_Pasta%2CPizza_Mellendorf.pdf" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Speisekarte</span></a></div></article><article class="card" data-category="Döner,Pasta,Pizza"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Döner</span><span class="badge">Pasta</span><span class="badge">Pizza</span></div><h2 class="card-title">Salo’s</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Mellendorf</p></div><div class="actions"><a href="menus/Salo%E2%80%99s_D%C3%B6ner%2CPasta%2CPizza_Mellendorf.pdf" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Speisekarte</span></a></div></article><article class="card" data-category="Burger,Pommes,Schnitzel"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Burger</span><span class="badge">Pommes</span><span class="badge">Schnitzel</span></div><h2 class="card-title">Schlemmereck</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Mellendorf</p></div><div class="actions"><a href="menus/Schlemmereck_Burger%2CPommes%2CSchnitzel_Mellendorf.pdf" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Speisekarte</span></a></div></article><article class="card" data-category="Asiatisch"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Asiatisch</span></div><h2 class="card-title">Sen Garden</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Bissendorf</p></div><div class="actions"><a href="https://sengarden.de/delivery?scroll-to-menu=true" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Webseite</span></a></div></article><article class="card" data-category="Griechisch"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Griechisch</span></div><h2 class="card-title">Syrtaki</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Bissendorf</p></div><div class="actions"><a href="https://cdn.website.dish.co/media/37/af/10270913/Speisekarte.pdf" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Webseite</span></a></div></article><article class="card" data-category="Burger,Döner,Salate"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Burger</span><span class="badge">Döner</span><span class="badge">Salate</span></div><h2 class="card-title">Tamo‘s</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Mellendorf</p></div><div class="actions"><a href="https://tamos-salate.de/files/Tamos-salate-Flyer-2025.pdf" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Webseite</span></a></div></article><article class="card" data-category="Pasta,Pizza,Salate"><div class="card-body"><div class="badges-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;"><span class="badge">Pasta</span><span class="badge">Pizza</span><span class="badge">Salate</span></div><h2 class="card-title">da Luca</h2><p class="card-meta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Langenhagen</p></div><div class="actions"><a href="https://www.da-luca.eu/speisekarte" target="_blank" rel="noopener" class="btn btn-pdf"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span>Webseite</span></a></div></article>
+    </main>
+
+    <script>
+        let currentCategory = 'all';
+
+        function filterCategory(cat, evt) {
+            currentCategory = cat;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (evt && evt.target) {
+                evt.target.classList.add('active');
+            }
+            filterCards();
+        }
+
+        function filterCards() {
+            const cards = document.querySelectorAll('.card');
+
+            cards.forEach(card => {
+                const rawCategories = card.getAttribute('data-category') || '';
+                const categoryArray = rawCategories.split(',');
+
+                const matchesCategory = (currentCategory === 'all' || categoryArray.includes(currentCategory));
+
+                if (matchesCategory) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
