@@ -1,17 +1,22 @@
-name: Build and Deploy to Netcup via SFTP
+name: Build Website for Git Deployment
 
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'index.html'
   workflow_dispatch:
 
 concurrency:
-  group: "sftp-deploy"
+  group: "build-bratnase"
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Repository auschecken
@@ -25,18 +30,14 @@ jobs:
       - name: index.html mit build.py generieren
         run: python build.py
 
-      - name: Dateien per FTPS auf Netcup hochladen
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          server-dir: ./
-          exclude: |
-            **/.git*
-            **/.git*/**
-            .github/**
-            README.md
-            template.html
+      - name: Generierte index.html ins Repository committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --staged --quiet; then
+            echo "Keine Änderungen an index.html."
+          else
+            git commit -m "chore: update index.html"
+            git push
+          fi
