@@ -1,4 +1,4 @@
-name: Build, Commit and Deploy to GitHub Pages
+name: Build and Commit Website
 
 on:
   push:
@@ -40,25 +40,3 @@ jobs:
             git commit -m "chore: update index.html"
             git push
           fi
-
-  deploy-pages:
-    needs: build-and-commit
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Aktualisiertes Repository auschecken
-        uses: actions/checkout@v4
-
-      - name: Pages-Artefakt hochladen
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      - name: Auf GitHub Pages bereitstellen
-        id: deployment
-        uses: actions/deploy-pages@v4
